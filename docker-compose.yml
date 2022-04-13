@@ -1,0 +1,39 @@
+version: '3.5'
+
+services:
+  nginx:
+    build: nginx
+    ports:
+      - "80:80"
+    links:
+      - frontend
+      - backend
+  frontend:
+    build: frontend
+    links:
+      - backend
+  backend:
+    build: backend
+    expose:
+      - 8080
+    links:
+      - db
+  db:
+    image: postgres:14
+    expose:
+      - 5432
+    env_file:
+      - postgres.env
+    volumes:
+      - postgresdata:/var/lib/postgresql/data
+  db_admin:
+    image: "dpage/pgadmin4:6"
+    ports:
+      - "5400:80"
+    env_file:
+      -  pgadmin.env
+    links:
+      - db
+volumes:
+  postgresdata:
+    external: true
